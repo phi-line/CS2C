@@ -15,8 +15,8 @@ public:
         capacity_ = 0;
     }
     LogNVector(const LogNVector& other) : LogNVector() {
-        for(T data : other.arrays_)
-            push_back(data);
+        for(int i = 0; i < other.size(); i++)
+            push_back(other[i]);
     }
     LogNVector(std::initializer_list<T> ilist) : LogNVector() {
         for(T data : ilist)
