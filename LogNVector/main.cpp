@@ -6,7 +6,7 @@ using std::cout;
 using std::endl;
 
 int main() {
-    LogNVector<int> v = {0, 11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 0, 11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 0, 11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121};
+    LogNVector<int> v = {0, 11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121};
     cout << "v[0] == " << v[0] << ",    &v[0] == " << &v[0] << endl;
     for (int j = 1; j < v.size(); ++j) {
         // All the elements in the same array should have sequential addresses.
@@ -16,5 +16,10 @@ int main() {
         << "&v[" << j << "] - &v[" << j - 1 << "] == "
         << &v[j] - &v[j - 1] << endl;
     }
+
+    LogNVector<int> copy(v);
+    for(int k = 0; k < copy.size(); k++)
+        std::cout << copy[k] << std::endl;
+    
     return 0;
 }
