@@ -99,52 +99,6 @@ namespace nonstd {
             return false;
         }
         
-        // Remove all nodes that have value() == value.
-        // Returns the number of nodes removed.
-        int remove(const T& value) {
-            numRemoved = 0;
-            // case 1: if the root node has no children
-            // just remove that node
-            Node* leaf = root_.get();
-            while (leaf != nullptr) {
-                std::unique_ptr<Node>* parent;
-                if(value < leaf->value_) {
-                    parent = leaf->left_;
-                    leaf = leaf->left_.get();
-                }
-                
-                else if (value > leaf->value_) {
-                    parent = leaf->right_;
-                    leaf = leaf->right_.get();
-                }
-                
-                else if (value == leaf->value_) {
-                    // case 1: if the root node has no children
-                    if (leaf->left_ == nullptr && leaf->right_ == nullptr) {
-                        delete leaf;
-                        numRemoved++;
-                        size_--;
-                        break;
-                    }
-                    // case 2: if the root node has one child
-                    else if (leaf->left_ != nullptr) {
-                        if (leaf->left)
-                    }
-                    else if (leaf->right_ != nullptr) {
-                        
-                    }
-                    // case 3: if the root node has two children
-                    else {
-                        
-                    }
-                }
-                
-                if ()
-            }
-                
-            return numRemoved;
-        }]
-        
         int leaf_traversal(const T& value, Node* leaf) {
             if(leaf == nullptr)
                 return 0;
