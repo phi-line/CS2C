@@ -3,8 +3,8 @@
 
 template <typename ArrayLike, typename T>
 int ternary_search(const ArrayLike& array, const T& value, int low, int high) {
-  unsigned int oneThird;
-  unsigned int twoThird;
+  int oneThird;
+  int twoThird;
   while (low < high) {
     oneThird = (low + ((high - low)/3));
     twoThird = (low + 2*((high - low)/3));
