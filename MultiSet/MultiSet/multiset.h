@@ -10,7 +10,7 @@ namespace nonstd {
         class Node {
         private:
             T value_;
-            std::unique_ptr<Node> left_, right_;
+            std::shared_ptr<Node> left_, right_;
             Node(const T& value) : value_(value) {}
         public:
             Node *left() {
@@ -27,7 +27,7 @@ namespace nonstd {
         };
 
     private:
-        std::unique_ptr<Node> root_;
+        std::shared_ptr<Node> root_;
         int size_;
         
     public:
@@ -100,39 +100,47 @@ namespace nonstd {
         }
         
         int remove(const T& value) {
-            int numRemoved = this->remove_helper(value, root_.get());
-            this->size_ -= numRemoved;
-            return numRemoved;
+            int count = 0;
+            while (contains(value)) //remove all instances of node
+                count += remove(value, root_);
+            size_ -= count;
+            return count;
         }
         
-        int remove_helper(const T& x, Node* p) {
-            int numRemoved = 0;
-            if(p && x < p->value_)
-                numRemoved += remove_helper(x, p->left_.get());
-            else if(p && x > p->value_)
-                numRemoved += remove_helper(x, p->right_.get());
-            else if(p && p->value_ == x) {
-                if(!p->left_.get())
-                    p = std::move(p->right_.get());
-                else if(!p->right_.get()) p = p = std::move(p->left_.get());
-                else {
-                    Node* q = p->left_.get();
-                    while(q->right_.get()) q=q->right_.get();
-                    p = std::move(q);
-                    remove_helper(x, p->left_.get());
-                }
-                numRemoved += 1;
-            }
-            return numRemoved;
-        }
 
         int size() { return this->size_; }
 
         Node *root() { return root_.get(); }
         
-        std::unique_ptr<Node> create_node(const T& value) {
+        std::shared_ptr<Node> create_node(const T& value) {
             size_++;
-            return std::unique_ptr<Node>(new Node(value));
+            return std::shared_ptr<Node>(new Node(value));
+        }
+        
+    private:
+        int remove(const T& t, std::shared_ptr<Node>& l) {
+            int count = 0;
+            if (l != nullptr) {
+                if(t < l->value_) //recurse on left leaf
+                    count += remove(t, l->left_);
+                else if(t > l->value_)
+                    count += remove(t, l->right_);
+                else { // found value!
+                    if(!l->left_)
+                        l = l->right_;
+                    else if(!l->right_)
+                        l = l->left_;
+                    else {
+                        std::shared_ptr<Node> min = l->left_;
+                        while(min->right_) //recursively find candidate replacement
+                            min = min->right_;
+                        l->value_ = min->value_; //replace original with candiate
+                        remove(min->value_, l->left_); //remove candidate
+                    }
+                    count += 1;
+                }
+            }
+            return count;
         }
     };
 
