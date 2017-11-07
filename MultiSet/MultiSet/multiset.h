@@ -99,59 +99,31 @@ namespace nonstd {
             return false;
         }
         
-        // Remove all nodes that have value() == value.
-        // Returns the number of nodes removed.
         int remove(const T& value) {
-            numRemoved = 0;
-            // case 1: if the root node has no children
-            // just remove that node
-            Node* leaf = root_.get();
-            while (leaf != nullptr) {
-                std::unique_ptr<Node>* parent;
-                if(value < leaf->value_) {
-                    parent = leaf->left_;
-                    leaf = leaf->left_.get();
-                }
-                
-                else if (value > leaf->value_) {
-                    parent = leaf->right_;
-                    leaf = leaf->right_.get();
-                }
-                
-                else if (value == leaf->value_) {
-                    // case 1: if the root node has no children
-                    if (leaf->left_ == nullptr && leaf->right_ == nullptr) {
-                        delete leaf;
-                        numRemoved++;
-                        size_--;
-                        break;
-                    }
-                    // case 2: if the root node has one child
-                    else if (leaf->left_ != nullptr) {
-                        if (leaf->left)
-                    }
-                    else if (leaf->right_ != nullptr) {
-                        
-                    }
-                    // case 3: if the root node has two children
-                    else {
-                        
-                    }
-                }
-                
-                if ()
-            }
-                
+            int numRemoved = this->remove_helper(value, root_.get());
+            this->size_ -= numRemoved;
             return numRemoved;
         }
         
-        int leaf_traversal(const T& value, Node* leaf) {
-            if(leaf == nullptr)
-                return 0;
-            
-            int counter = (value == leaf->value_) ? 1 : 0;
-            Node* direction = (value < leaf->value_) ? leaf->left_.get() : leaf->right_.get();
-            return counter + count_leaf(value, direction);
+        int remove_helper(const T& x, Node* p) {
+            int numRemoved = 0;
+            if(p && x < p->value_)
+                numRemoved += remove_helper(x, p->left_.get());
+            else if(p && x > p->value_)
+                numRemoved += remove_helper(x, p->right_.get());
+            else if(p && p->value_ == x) {
+                if(!p->left_.get())
+                    p = std::move(p->right_.get());
+                else if(!p->right_.get()) p = p = std::move(p->left_.get());
+                else {
+                    Node* q = p->left_.get();
+                    while(q->right_.get()) q=q->right_.get();
+                    p = std::move(q);
+                    remove_helper(x, p->left_.get());
+                }
+                numRemoved += 1;
+            }
+            return numRemoved;
         }
 
         int size() { return this->size_; }
