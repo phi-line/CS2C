@@ -50,22 +50,22 @@ namespace nonstd {
                 return;
             }
             
-            Node* leaf = root_.get();
+            Node* l = root_.get();
             while(true) {
-                if(value < leaf->value_) {
-                    if(leaf->left_)
-                        leaf = leaf->left_.get();
+                if(value < l->value_) {
+                    if(l->left_)
+                        l = l->left();
                     else {
-                        leaf->left_ = create_node(value);
+                        l->left_ = create_node(value);
                         return;
                     }
                 }
                 else { // default behaviour if value is >= leaf value
-                    if(leaf->right_)
-                        leaf = leaf->right_.get();
+                    if(l->right_)
+                        l = l->right();
                     else
                     {
-                        leaf->right_= create_node(value);
+                        l->right_= create_node(value);
                         return;
                     }
                 }
@@ -73,28 +73,18 @@ namespace nonstd {
         }
 
         int count(const T& value) {
-            return count_leaf(value, root_.get());
-        }
-
-        // helper function that gets count of leaf subtree
-        int count_leaf(const T& value, Node* leaf) {
-            if(leaf == nullptr)
-                return 0;
-            
-            int counter = (value == leaf->value_) ? 1 : 0;
-            Node* direction = (value < leaf->value_) ? leaf->left_.get() : leaf->right_.get();
-            return counter + count_leaf(value, direction);
+            return count(value, root_.get());
         }
 
         bool contains(const T& value) {
-            Node* leaf = root_.get();
-            while(leaf != nullptr) {
-                if(value == leaf->value_)
+            Node* l = root_.get();
+            while(l != nullptr) {
+                if(value == l->value_)
                     return true;
-                else if(value < leaf->value_)
-                    leaf = leaf->left_.get();
+                else if(value < l->value_)
+                    l = l->left();
                 else
-                    leaf = leaf->right_.get();
+                    l = l->right();
             }
             return false;
         }
@@ -106,7 +96,6 @@ namespace nonstd {
             size_ -= count;
             return count;
         }
-        
 
         int size() { return this->size_; }
 
@@ -142,6 +131,13 @@ namespace nonstd {
             }
             return count;
         }
+        
+        int count(const T& value, Node* l) {
+            if(l == nullptr)
+                return 0;
+            
+            int counter = (value == l->value_) ? 1 : 0;
+            return counter + count(value, l->left()) + count(value, l->right());
+        }
     };
-
-} // namespace nonstd
+}
